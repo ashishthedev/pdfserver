@@ -23,7 +23,6 @@ build
 # Logs:
 *.log
 .idea/
-static/
 .vagrant
 gunicorn_logs/
 google_appengine_python/
