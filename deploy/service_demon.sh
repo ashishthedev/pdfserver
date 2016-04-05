@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd /home/ashishthedev/pdfserver/
-exec gunicorn -c deploy/gunicorn.conf.py run:app
+exec /home/ashishthedev/.virtualenvs/pdfserver/bin/gunicorn -c deploy/gunicorn.conf.py run:app
