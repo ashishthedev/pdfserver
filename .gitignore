@@ -1,0 +1,29 @@
+# Binaries
+bin/wkhtmltopdf
+
+# Python bytecode:
+*.py[co]
+
+# Packaging files:
+*.egg*
+
+# Editor temp files:
+*.sw[po]
+*.bak
+*~
+\#*
+.\#*
+
+# Sphinx docs:
+build
+
+# SQLite3 database files:
+*.db
+
+# Logs:
+*.log
+.idea/
+static/
+.vagrant
+gunicorn_logs/
+google_appengine_python/

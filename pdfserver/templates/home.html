@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<form method="POST" action="/api/generateFromURL">
+
+  <br>
+  <br>
+  <br>
+
+  <div class="input-group">
+    <input id="weburl" name="weburl" required class="center-block form-control" autofocus="true" title="WebUrl" type="url" value="http://testclimaterealty.appspot.com" placeholder="http://www.google.com">
+    <span class="input-group-btn">
+      <button class="btn btn-info" type="submit" >Submit</button>
+    </span>
+  </div><!-- /input-group -->
+</form>
+{% endblock %}
+
