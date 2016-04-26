@@ -1,3 +1,4 @@
+import datetime
 import requests
 import tempfile
 
@@ -20,6 +21,7 @@ def urltopdf(url, delayms=200):
              "--no-stop-slow-scripts",
              "--javascript-delay", str(delayms),
             url, tpdf.name])
+        current_app.logger.info(datetime.datetime.now())
         current_app.logger.info("cmd=\n{}".format(" ".join(cmd)))
         import subprocess
         subprocess.call(cmd)
