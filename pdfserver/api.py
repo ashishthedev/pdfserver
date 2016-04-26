@@ -1,13 +1,12 @@
 import requests
 import tempfile
 
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, make_response, current_app
 
 from config.default import WKHTML_BINARY
 
 
 api = Blueprint('api', __name__)
-import logging
 
 DEBUG_M = "ashishthedev@gmail.com"
 
@@ -21,7 +20,7 @@ def urltopdf(url, delayms=200):
              "--no-stop-slow-scripts",
              "--javascript-delay", str(delayms),
             url, tpdf.name])
-        logging.info("cmd=\n{}".format(" ".join(cmd)))
+        current_app.logger.info("cmd=\n{}".format(" ".join(cmd)))
         import subprocess
         subprocess.call(cmd)
         resultingPdfBinContents = tpdf.read()
@@ -35,11 +34,11 @@ def FetchTitle(weburl):
     start = html.find("<title>")
     end = html.find("</title>")
     if start == -1 or end == -1:
-        logging.info("Cannot parse title")
+        current_app.logger.info("Cannot parse title")
         return None
     else:
         title = html[start + len("<title>"): end].strip()
-        logging.info("Parsed title is: {}".format(title))
+        current_app.logger.info("Parsed title is: {}".format(title))
         return title
     return
 

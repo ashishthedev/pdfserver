@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 
@@ -16,6 +17,10 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
     # Configure logging
     if not app.testing:
         logging.basicConfig(level=logging.INFO)
+
+    handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
 
     # Register the api blueprint.
     from .webapp import webapp
