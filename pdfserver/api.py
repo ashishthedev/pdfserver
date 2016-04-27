@@ -1,6 +1,6 @@
-import datetime
 import requests
 import tempfile
+import time
 
 from flask import Blueprint, request, make_response, current_app
 
@@ -11,6 +11,9 @@ api = Blueprint('api', __name__)
 
 DEBUG_M = "ashishthedev@gmail.com"
 
+def localNow():
+    return time.asctime(time.localtime(time.time()))
+
 def urltopdf(url, delayms=200):
     #with open("/tmp/o.pdf", "w+") as tpdf:
     with tempfile.NamedTemporaryFile(delete=False) as tpdf:
@@ -20,12 +23,15 @@ def urltopdf(url, delayms=200):
             "-O", "Landscape",
              "--no-stop-slow-scripts",
              "--javascript-delay", str(delayms),
+            #"\"{}\"".format(url), tpdf.name])
             url, tpdf.name])
-        current_app.logger.info(datetime.datetime.now())
-        current_app.logger.info("cmd=\n{}".format(" ".join(cmd)))
+        current_app.logger.info("cmd at {}=\n{}".format(localNow(), " ".join(cmd)))
         import subprocess
-        subprocess.call(cmd)
+        s = subprocess.check_output(cmd)
+        current_app.logger.info("output of subprocess: {}".format(s))
+
         resultingPdfBinContents = tpdf.read()
+        current_app.logger.info("{} is complete".format(tpdf.name))
         return resultingPdfBinContents
 
 
@@ -64,10 +70,13 @@ def generateFromURLAndEmail():
             import datetime
             title = datetime.datetime.now()
     except Exception as e:
+        current_app.logger.error("Caught Exception: {}".format(e))
         raise e
 
-    oneMinuteAsMS = 60000
-    resultingPdfBinContents = urltopdf(weburl, delayms=oneMinuteAsMS)
+    seconds = 1000*20
+    resultingPdfBinContents = urltopdf(weburl, delayms=seconds)
+
+    current_app.logger.info("PDF Generated at {}".format(localNow()))
 
     #response = make_response(resultingPdfBinContents)
     #response.headers['Content-Disposition'] = "attachment; filename={}.pdf".format(title)
@@ -88,8 +97,11 @@ def generateFromURLAndEmail():
 </table>
 <br>
 <br>
+Web version of the report is present <a href="{weburl}">here</a>.
 <br>
-"""
+<br>
+<br>
+""".format(weburl=weburl)
     senderur = "moc.liamg@ptmstropervc"
     senderpr = "noitaulavetamilc"
     if debug_this_flow:
@@ -98,9 +110,11 @@ def generateFromURLAndEmail():
         toEmailCSV = ccEmailCSV = bccEmailCSV = DEBUG_M
         subject = subject + "[DEBUG_CV_MAIL]"
 
+    current_app.logger.info("Trying to send email")
     SendEmail(senderur[::-1], senderpr[::-1], toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, resultingPdfBinContents)
+    current_app.logger.info("Mail sent to {} {} {}at {}".format(toEmailCSV, ccEmailCSV, bccEmailCSV, localNow()))
     response = "Email sent"
-    return response
+    return make_response(response)
 
 def SendEmail(senderu, senderp, toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, attachmentAsBinContent):
     import smtplib
