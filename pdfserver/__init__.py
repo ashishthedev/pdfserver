@@ -18,7 +18,7 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
     if not app.testing:
         logging.basicConfig(level=logging.INFO)
 
-    handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+    handler = RotatingFileHandler('logs.log', maxBytes=100*1000, backupCount=1)
     handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
 

@@ -36,7 +36,7 @@ def urltopdf(url, delayms=200):
 
 
 def FetchTitle(weburl):
-    r = requests.get(weburl)
+    r = requests.get(weburl, timeout=120)
     r.encoding = 'utf-8'
     html = r.text
     start = html.find("<title>")
@@ -50,7 +50,7 @@ def FetchTitle(weburl):
         return title
     return
 
-@api.route("/generateFromURLAndEmail", methods=['POST'])
+@api.route("/generateFromURLAndEmail", methods=['POST', "GET"])
 def generateFromURLAndEmail():
     data = request.form.to_dict(flat=True)
     weburl = data['weburl']
@@ -71,7 +71,7 @@ def generateFromURLAndEmail():
             title = datetime.datetime.now()
     except Exception as e:
         current_app.logger.error("Caught Exception: {}".format(e))
-        raise e
+        raise
 
     seconds = 1000*20
     resultingPdfBinContents = urltopdf(weburl, delayms=seconds)
@@ -82,7 +82,7 @@ def generateFromURLAndEmail():
     #response.headers['Content-Disposition'] = "attachment; filename={}.pdf".format(title)
     #response.mimetype = 'application/pdf'
 
-    subject = "Report for {enduserEmail} and ph#{enduserPhoneNumber}".format(**locals())
+    subject = "Report attached for {enduserEmail} and ph#{enduserPhoneNumber}".format(**locals())
     body="""
 <br>
 <br>
@@ -113,7 +113,7 @@ Web version of the report is present <a href="{weburl}">here</a>.
     current_app.logger.info("Trying to send email")
     SendEmail(senderur[::-1], senderpr[::-1], toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, resultingPdfBinContents)
     current_app.logger.info("Mail sent to {} {} {}at {}".format(toEmailCSV, ccEmailCSV, bccEmailCSV, localNow()))
-    response = "Email sent"
+    response = "Report generated successfully and sent through email"
     return make_response(response)
 
 def SendEmail(senderu, senderp, toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, attachmentAsBinContent):
