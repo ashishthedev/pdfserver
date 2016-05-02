@@ -50,7 +50,7 @@ def FetchTitle(weburl):
         return title
     return
 
-@api.route("/generateFromURLAndEmail", methods=['POST', "GET"])
+@api.route("/generateFromURLAndEmail", methods=['POST'])
 def generateFromURLAndEmail():
     data = request.form.to_dict(flat=True)
     weburl = data['weburl']
