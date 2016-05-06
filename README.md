@@ -20,7 +20,7 @@ workon pdfserver
 ```
 
 ### Installing dependencies with pip
-
+Please make sure you are inside the activated virtualenv. Once confirmed, please install the dependencies through:
 ```
 pip install -r requirements.txt
 ```
