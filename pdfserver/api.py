@@ -71,7 +71,7 @@ def generateFromURLAndEmail():
     bccEmailCSV = data['bccEmailCSV']
     enduserEmail = data['enduserEmail']
     enduserPhoneNumber = data['enduserPhoneNumber']
-    debug_this_flow = weburl.find('debug_this_flow') != -1
+    debug_this_flow = weburl.find('debug_this_flow=true') != -1
 
     toEmailCSV += COMMA + enduserEmail
     if debug_this_flow:
