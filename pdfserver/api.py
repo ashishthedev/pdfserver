@@ -50,8 +50,15 @@ def FetchTitle(weburl):
         return title
     return
 
-@api.route("/generateFromURLAndEmail", methods=['POST'])
+@api.route("/ping")
+def ping():
+    return make_response("OK")
+
+COMMA = ","
+@api.route("/generateFromURLAndEmail", methods=['POST', 'GET'])
 def generateFromURLAndEmail():
+    if request.method == "GET":
+        return make_response("Please use POST method to supply params")
     data = request.form.to_dict(flat=True)
     weburl = data['weburl']
     toEmailCSV = data['toEmailCSV']
@@ -61,6 +68,7 @@ def generateFromURLAndEmail():
     enduserPhoneNumber = data['enduserPhoneNumber']
     debug_this_flow = weburl.find('debug_this_flow') != -1
 
+    toEmailCSV += COMMA + enduserEmail
     if debug_this_flow:
         toEmailCSV = ccEmailCSV = bccEmailCSV = DEBUG_M
 

@@ -2,6 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
+from flask_cors import CORS
 
 
 def create_app(config, debug=False, testing=False, config_overrides=None):
@@ -11,6 +12,7 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
     app.debug = debug
     app.testing = testing
 
+    CORS(app)
     if config_overrides:
         app.config.update(config_overrides)
 
