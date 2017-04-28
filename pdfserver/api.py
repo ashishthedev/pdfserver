@@ -16,19 +16,24 @@ def localNow():
 
 def urltopdf(url, delayms=200):
     #with open("/tmp/o.pdf", "w+") as tpdf:
-    with tempfile.NamedTemporaryFile(delete=False) as tpdf:
+    #with tempfile.NamedTemporaryFile(delete=False) as tpdf:
+    with tempfile.NamedTemporaryFile(dir=".", delete=True) as tpdf:
         cmd=[]
         cmd.append(WKHTML_BINARY)
         cmd.extend(["--viewport-size", "8000x800",
             "-O", "Landscape",
              "--no-stop-slow-scripts",
              "--javascript-delay", str(delayms),
-            #"\"{}\"".format(url), tpdf.name])
-            url, tpdf.name])
+            "\"{}\"".format(url), tpdf.name])
+            #url, tpdf.name])
         current_app.logger.info("cmd at {}=\n{}".format(localNow(), " ".join(cmd)))
         import subprocess
-        s = subprocess.check_output(cmd)
-        current_app.logger.info("output of subprocess: {}".format(s))
+        try:
+            s = subprocess.check_output(cmd)
+            current_app.logger.info("output of subprocess: {}".format(s))
+        except subprocess.CalledProcessError as e:
+            current_app.logger.info("error: {}".format(e.output))
+
 
         resultingPdfBinContents = tpdf.read()
         current_app.logger.info("{} is complete".format(tpdf.name))
