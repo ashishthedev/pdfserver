@@ -16,8 +16,8 @@ def localNow():
 
 def urltopdf(url, delayms=200):
     #with open("/tmp/o.pdf", "w+") as tpdf:
-    #with tempfile.NamedTemporaryFile(delete=False) as tpdf:
-    with tempfile.NamedTemporaryFile(dir=".", delete=True) as tpdf:
+    with tempfile.NamedTemporaryFile(delete=False) as tpdf:
+    #with tempfile.NamedTemporaryFile(dir=".", delete=False) as tpdf:
         cmd=[]
         cmd.append(WKHTML_BINARY)
         cmd.extend(["--viewport-size", "8000x800",
@@ -72,7 +72,7 @@ def generateFromURLAndEmail():
     enduserEmail = data['enduserEmail']
     enduserPhoneNumber = data['enduserPhoneNumber']
     debug_this_flow = weburl.find('debug_this_flow=true') != -1
-    debugMode = weburl.lower().find('debugMode=on') != -1
+    debugMode = weburl.lower().find('debugmode=on') != -1
 
 
     toEmailCSV += COMMA + enduserEmail
