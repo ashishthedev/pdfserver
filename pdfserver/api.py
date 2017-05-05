@@ -117,8 +117,10 @@ Web version of the report is present <a href="{weburl}">here</a>.
 <br>
 <br>
 """.format(weburl=weburl)
+
     senderur = "moc.liamg@ptmstropervc"
     senderpr = "noitaulavetamilc"
+
     if debug_this_flow:
         print("debug_this_flow found. Resetting emails")
         print("Before resetting the values were: toEmailCSV: {toEmailCSV}, ccEmailCSV: {ccEmailCSV}, bccEmailCSV: {bccEmailCSV}".format(**locals()))
@@ -127,7 +129,7 @@ Web version of the report is present <a href="{weburl}">here</a>.
 
     current_app.logger.info("Trying to send email")
     SendEmail(senderur[::-1], senderpr[::-1], toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, resultingPdfBinContents)
-    current_app.logger.info("Mail sent to {} {} {}at {}".format(toEmailCSV, ccEmailCSV, bccEmailCSV, localNow()))
+    current_app.logger.info("Mail sent to toEmailCSV:{} ccEmailCSV:{} at {}".format(toEmailCSV, ccEmailCSV, localNow()))
     response = "Report generated successfully and sent through email"
     return make_response(response)
 
