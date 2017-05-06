@@ -6,7 +6,6 @@ from flask import Blueprint, request, make_response, current_app
 
 from config.default import WKHTML_BINARY
 
-
 api = Blueprint('api', __name__)
 
 DEBUG_M = "ashishthedev@gmail.com"
@@ -15,24 +14,33 @@ def localNow():
     return time.asctime(time.localtime(time.time()))
 
 def urltopdf(url, delayms=200):
-    #with open("/tmp/o.pdf", "w+") as tpdf:
-    with tempfile.NamedTemporaryFile(delete=False) as tpdf:
-    #with tempfile.NamedTemporaryFile(dir=".", delete=False) as tpdf:
+    """
+    Return pdf binary contents or None
+    """
+
+    #with open("./o.pdf", "w") as tpdf:
+    #with tempfile.NamedTemporaryFile(delete=False) as tpdf:
+    with tempfile.NamedTemporaryFile(dir="./tmpfiles", delete=False) as tpdf:
         cmd=[]
+        cmd.append("sudo")
         cmd.append(WKHTML_BINARY)
         cmd.extend(["--viewport-size", "8000x800",
             "-O", "Landscape",
              "--no-stop-slow-scripts",
              "--javascript-delay", str(delayms),
-            "\"{}\"".format(url), tpdf.name])
-            #url, tpdf.name])
+            #"\"{}\"".format(url), tpdf.name])
+            url, tpdf.name])
         current_app.logger.info("cmd at {}=\n{}".format(localNow(), " ".join(cmd)))
         import subprocess
         try:
             s = subprocess.check_output(cmd)
-            current_app.logger.info("output of subprocess: {}".format(s))
-        except subprocess.CalledProcessError as e:
-            current_app.logger.info("error: {}".format(e.output))
+            #current_app.logger.info("output of subprocess: {}".format(s))
+
+            #subprocess.call(cmd)
+        #except subprocess.CalledProcessError as e:
+        except Exception as e:
+            current_app.logger.error("error: {}".format(e))
+            return None
 
 
         resultingPdfBinContents = tpdf.read()
@@ -71,25 +79,22 @@ def generateFromURLAndEmail():
     bccEmailCSV = data['bccEmailCSV']
     enduserEmail = data['enduserEmail']
     enduserPhoneNumber = data['enduserPhoneNumber']
-    debug_this_flow = weburl.find('debug_this_flow=true') != -1
-    debugMode = weburl.lower().find('debugmode=on') != -1
-
+    debug_this_flow = weburl.lower().find('debug_this_flow=true') != -1 or \
+            weburl.lower().find('debugmode=on') != -1
 
     toEmailCSV += COMMA + enduserEmail
-    if debug_this_flow or debugMode:
-        toEmailCSV = ccEmailCSV = bccEmailCSV = DEBUG_M
 
     try:
         title = FetchTitle(weburl)
         if not title:
             import datetime
             title = datetime.datetime.now()
+
+        resultingPdfBinContents = urltopdf(weburl, delayms=30*1000)
     except Exception as e:
         current_app.logger.error("Caught Exception: {}".format(e))
         raise
 
-    seconds = 1000*20
-    resultingPdfBinContents = urltopdf(weburl, delayms=seconds)
 
     current_app.logger.info("PDF Generated at {}".format(localNow()))
 
@@ -128,8 +133,12 @@ Web version of the report is present <a href="{weburl}">here</a>.
         subject = subject + "[DEBUG_CV_MAIL]"
 
     current_app.logger.info("Trying to send email")
-    SendEmail(senderur[::-1], senderpr[::-1], toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, resultingPdfBinContents)
-    current_app.logger.info("Mail sent to toEmailCSV:{} ccEmailCSV:{} at {}".format(toEmailCSV, ccEmailCSV, localNow()))
+    try:
+        SendEmail(senderur[::-1], senderpr[::-1], toEmailCSV, ccEmailCSV, bccEmailCSV, subject, body, resultingPdfBinContents)
+    except Exception as ex:
+        current_app.logger.error("Error while sending email: {}".format(ex))
+    else:
+        current_app.logger.info("Mail sent to toEmailCSV:{} ccEmailCSV:{} at {}".format(toEmailCSV, ccEmailCSV, localNow()))
     response = "Report generated successfully and sent through email"
     return make_response(response)
 
