@@ -15,8 +15,8 @@ def localNow():
     return time.asctime(time.localtime(time.time()))
 
 def urltopdf(url, delayms=200):
-    #with open("/tmp/o.pdf", "w+") as tpdf:
-    with tempfile.NamedTemporaryFile(delete=False) as tpdf:
+    with open("/tmp/o.pdf", "w") as tpdf:
+    #with tempfile.NamedTemporaryFile(delete=False) as tpdf:
     #with tempfile.NamedTemporaryFile(dir=".", delete=False) as tpdf:
         cmd=[]
         cmd.append(WKHTML_BINARY)
@@ -119,7 +119,7 @@ Web version of the report is present <a href="{weburl}">here</a>.
 """.format(weburl=weburl)
 
     senderur = "moc.liamg@ptmstropervc"
-    senderpr = "noitaulavetamilc"
+    senderpr = "77noitaulavetamilc"
 
     if debug_this_flow:
         print("debug_this_flow found. Resetting emails")
