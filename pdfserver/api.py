@@ -19,7 +19,7 @@ def b2kb(x):
     if type(x) == type(1):
         return x/1024
     return None
-def urltopdf(url, max_reattempts=20, threshold_filesize_kb=200, delayms=200):
+def urltopdf(url, max_reattempts=20, threshold_filesize_kb=2000, delayms=200):
     """
     Return pdf binary contents or None
     """
@@ -98,12 +98,12 @@ def generateFromURLAndEmail():
             import datetime
             title = datetime.datetime.now()
 
-        resultingPdfBinContents = urltopdf(weburl, max_reattempts=20, threshold_filesize_kb=200, delayms=1*1000)
+        resultingPdfBinContents = urltopdf(weburl, max_reattempts=20, threshold_filesize_kb=20, delayms=1*1000)
     except Exception as e:
         current_app.logger.error("Caught Exception: {}".format(e))
         raise
 
-    subject = "Report attached for {enduserEmail} and ph#{enduserPhoneNumber}".format(**locals())
+    subject = "Report attached for {enduserEmail}".format(**locals())
     body_success="""
 <br>
 <br>
